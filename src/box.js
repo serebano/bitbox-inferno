@@ -1,6 +1,6 @@
-import { observe } from "bitbox"
 import Component from "inferno-component"
 import createElement from "inferno-create-element"
+import { observe } from "bitbox"
 
 function inferno(fn) {
     const component = props => fn(props, createElement)
