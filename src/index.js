@@ -1,7 +1,14 @@
+import { observable, observe } from "bitbox"
 import { render } from "inferno"
 import App from "./App"
 import "./index.css"
-import * as app from "./box"
+import appStore from "./store"
 
-Object.assign(window, app)
-//render(<App />, document.getElementById("app"))
+const store = observable(appStore)
+
+Object.assign(window, { appStore, store })
+
+render(<App store={store} />, document.getElementById("app"))
+
+setInterval(() => store.count++)
+store.name = `box - ${store.count}`

@@ -1,20 +1,26 @@
 {
-  "name": "bitbox-inferno",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "inferno": "^3.2.0",
-    "inferno-component": "^3.2.0",
-    "inferno-create-element": "^3.2.0",
-    "inferno-devtools": "^3.2.0"
-  },
-  "devDependencies": {
-    "inferno-scripts": "3.0.0"
-  },
-  "scripts": {
-    "start": "inferno-scripts start",
-    "build": "inferno-scripts build",
-    "test": "inferno-scripts test --env=jsdom",
-    "eject": "inferno-scripts eject"
-  }
+	"name": "bitbox-inferno",
+	"version": "0.1.0",
+	"private": true,
+	"repository": "https://github.com/serebano/bitbox-inferno.git",
+	"homepage": "http://serebano.github.io/bitbox-inferno",
+	"author": "Sergiu Toderascu <sergiu.toderascu@gmail.com>",
+	"dependencies": {
+		"inferno": "^3.2.0",
+		"inferno-component": "^3.2.0",
+		"inferno-create-element": "^3.2.0",
+		"inferno-devtools": "^3.2.0"
+	},
+	"devDependencies": {
+		"gh-pages": "^1.0.0",
+		"inferno-scripts": "3.0.0"
+	},
+	"scripts": {
+		"start": "inferno-scripts start",
+		"build": "inferno-scripts build",
+		"test": "inferno-scripts test --env=jsdom",
+		"eject": "inferno-scripts eject",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d build"
+	}
 }
