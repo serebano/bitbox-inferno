@@ -1,4 +1,4 @@
-import { observable, observe } from "bitbox"
+import { observable } from "bitbox"
 import { render } from "inferno"
 import App from "./App"
 import "./index.css"
@@ -8,6 +8,7 @@ const store = observable(appStore)
 
 Object.assign(window, { appStore, store })
 
+require("inferno-devtools")
 render(<App store={store} />, document.getElementById("app"))
 
 setInterval(() => store.count++)
