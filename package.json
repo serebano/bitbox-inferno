@@ -15,6 +15,13 @@
 		"gh-pages": "^1.0.0",
 		"inferno-scripts": "3.0.0"
 	},
+	"babel": {
+	    "presets": [ "es2015" ],
+	    "plugins": [["inferno", {
+	        "imports": true,
+	        "pragma": "bitbox.inferno"
+	    }]]
+	},
 	"scripts": {
 		"start": "inferno-scripts start",
 		"build": "inferno-scripts build",

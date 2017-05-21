@@ -1,31 +1,45 @@
 import Component from "inferno-component"
-import createElement from "inferno-create-element"
-import { observe } from "bitbox"
+import Inferno from "inferno"
+import bitbox, { is, project } from "bitbox"
 
-function inferno(fn) {
-    const component = props => fn(props, createElement)
+const createVNode = Inferno.createVNode
 
+Inferno.createVNode = function(...args) {
+    if (is.func(args[1])) args[1] = inferno(args[1])
+
+    return createVNode(...args)
+}
+
+function inferno(component) {
     return class InfernoBox extends Component {
-        displayName = `box(${fn.name})`
-
+        static displayName = `box(${component.name})`
+        getChildContext() {
+            return { store: this.context.store || this.props.store }
+        }
         componentWillMount() {
             const render = this.render
-            const initialRender = (...args) => {
+            const init = (...args) => {
                 let result
-                this.observer = observe(() => {
-                    if (this.render === initialRender) result = render.apply(this, args)
-                    else this.forceUpdate()
+                this.observer = bitbox(project(this.context.store, this.props), _props => {
+                    this._props = _props
+
+                    if (this.render === init) {
+                        result = render.apply(this, args)
+                    } else {
+                        this.forceUpdate()
+                    }
                 })
+
                 this.render = render
                 return result
             }
-            this.render = initialRender
+            this.render = init
         }
         componentWillUnmount() {
             this.observer.off()
         }
         render() {
-            return component(this.props)
+            return component(this._props, bitbox)
         }
     }
 }
