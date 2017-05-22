@@ -1,70 +1,154 @@
-import bitbox from "bitbox"
-import inferno from "./box"
-import App from "./App"
+import bitbox, { operators } from "bitbox"
+import * as bb from "bitbox"
+
+import inferno, { Provider } from "./box"
+import App, { Count } from "./App"
 import appStore from "./store"
-import { render } from "inferno"
+import Inferno, { version } from "inferno"
+import Component from "inferno-component"
 import "./index.css"
+import { inc } from "./actions"
+
 import "inferno-devtools"
+const render = (com, sel) => Inferno.render(com, document.querySelector(sel))
 
-const store = bitbox(appStore)
+const store = bitbox({
+    name: "bitbox app",
+    count: 0,
+    inc
+})
 
-const foo = bitbox({ count: 1 })
-const bar = bitbox({ count: 2 })
+const foo = bitbox.count(0, {
+    inc,
+    run() {
+        this.id = setInterval(() => this.inc())
+    }
+})
+const bar = bitbox.count(0, operators.print)
 
-const counter = {}
-// bitbox(
-//     console.log,
-//     function Counter(props) {
-//         return (
-//             <section>
-//                 <h1>{props.count}</h1>
-//                 <button onClick={props.inc}>inc</button>
-//             </section>
-//         )
-//     },
-//     foo
-// )
-
-bitbox.count(
+const clock = bitbox.localeTime(
     {
-        foo,
-        bar,
-        get count() {
-            return this.foo.count + this.bar.count
+        time: Date.now(),
+        start() {
+            this.timer = setInterval(() => {
+                this.time = Date.now()
+            }, 1000)
+        },
+        stop() {
+            clearInterval(this.timer)
+        },
+        get localeTime() {
+            return new Date(this.time).toLocaleTimeString()
         }
     },
-    console.warn
+    operators.print
 )
 
-bitbox(store, o => {
-    if (o.count % 2) foo.count++
-    else bar.count++
-})
-
-bitbox(
-    { foo, bar },
-    {
-        get count() {
-            return this.foo.count + this.bar.count
+function ibox(component) {
+    return class extends Component {
+        static displayName = `box(${component.name})`
+        componentWillMount() {
+            const render = this.render
+            this.render = (...args) => {
+                let result
+                bitbox(this.props.props || {}, props => {
+                    if (!props.mounted) {
+                        props.mounted = true
+                        result = component(props) //render.apply(this, args)
+                        this.render = () => component(props) //render
+                    } else {
+                        this.forceUpdate()
+                    }
+                })
+                return result
+            }
+        }
+        shouldComponentUpdate() {
+            return false
         }
     }
-)
+}
 
-bitbox(() => console.log(`${foo.count} | ${bar.count}`))
-
-Object.assign(window, { bitbox, store, counter })
-
-// obj = { count: 0 }
-// app = bitbox.count(obj, console.warn)
-// app.count++
-
-const box = bitbox.count(0, count => {
-    render(<h1>{count}</h1>, document.getElementById("time"))
+const C2 = ibox(function Count(props) {
+    return (
+        <div style={{ border: "2px solid #c00" }}>
+            <div>Count [{props.count}]</div>
+            <button onClick={() => props.inc()}>inc()</button>
+            <button onClick={() => props.run()}>run()</button>
+            <button onClick={() => (props.count = 0)}>reset</button>
+        </div>
+    )
 })
 
-box.int = setInterval(() => (box.count < 100 ? box.count++ : clearInterval(box.int)))
+const Clock = ibox(function Clock() {
+    return (
+        <div>
+            <h4>{clock.localeTime}</h4>
+        </div>
+    )
+})
 
-render(<App store={store} />, document.getElementById("app"))
+const createCounter = (count = 0) => {
+    return {
+        count,
+        inc,
+        run() {
+            this.id = setInterval(() => this.inc())
+        }
+    }
+}
+const app = bitbox.counters([createCounter(), createCounter()])
+
+const Counters = ibox(function Counters() {
+    return (
+        <div>
+            <button onClick={() => app.counters.push(createCounter())}>Add</button>
+            {app.counters.map(counter => <C2 props={counter} />)}
+        </div>
+    )
+})
+function Main() {
+    return (
+        <section>
+            <Clock />
+            <Counters />
+        </section>
+    )
+}
+//const Clocko = bitbox(Clock)
+Inferno.render(<Main />, document.getElementById("app"))
+
+clock.start()
+Object.assign(window, operators, bb, {
+    App,
+    createCounter,
+    app,
+    Clock,
+    clock,
+    Count,
+    bitbox,
+    store,
+    operators,
+    bb,
+    appStore,
+    foo,
+    bar,
+    inc,
+    render,
+    inferno,
+    Provider
+})
+
+// render(<Provider store={store}><App /></Provider>, "#app")
+//
+// render(
+//     <Provider store={foo}>
+//         <Count />
+//     </Provider>,
+//     "#time"
+// )
+
+//operators.print(foo.$)
 
 // setInterval(() => store.count++)
 // store.name = `box - ${store.count}`
