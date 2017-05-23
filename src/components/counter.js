@@ -1,3 +1,5 @@
+import { div, h1, button } from "./box"
+
 export default function Counter(counter) {
     return div(
         {
@@ -5,7 +7,7 @@ export default function Counter(counter) {
                 border: "2px solid #c00"
             }
         },
-        title(`Count [${counter.count}]`),
+        h1.title(`Count [${counter.count}]`),
         button({ onClick: linkEvent(counter, inc) }, `inc`),
         button({ onClick: linkEvent(counter, run) }, `run`),
         button({ onClick: linkEvent(counter, reset) }, `reset`),
