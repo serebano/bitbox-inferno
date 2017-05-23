@@ -5,11 +5,18 @@ export function Title(props) {
     return <h3>{props.value}</h3>
 }
 
-function Name(props) {
+function Name(box) {
+    const props = {
+        value: box.name,
+        onInput(e) {
+            return e => (this.name = e.target.value)
+        }
+    }
+
     return (
         <section>
             <h1>{props.name}</h1>
-            <input onInput={e => (props.name = e.target.value)} value={props.name} />
+            <input onInput={onInput} value={props.name} />
         </section>
     )
 }

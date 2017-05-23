@@ -31,8 +31,7 @@ function inferno(component) {
 
                 function Observer(props, comp) {
                     if (comp.render === init) {
-                        comp._props = props
-                        comp._observer = this
+                        comp.$observer = this
                         result = render.apply(comp, args)
                     } else {
                         comp.forceUpdate()
@@ -40,20 +39,19 @@ function inferno(component) {
                 }
 
                 Observer.displayName = InfernoBox.displayName
-
-                bitbox(this.context.store, this.props, Observer, this)
-
+                this.$object = bitbox({}, Observer, this)
                 this.render = render
 
                 return result
             }
+
             this.render = init
         }
         componentWillUnmount() {
             this._observer.off()
         }
-        render() {
-            return component(this._props)
+        render(props, state, context) {
+            return component(props, context)
         }
     }
 }

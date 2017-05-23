@@ -1,4 +1,4 @@
-export default function inc() {
-    if (!this.count) this.count = 0
-    this.count++
+export default function inc(props) {
+    if (!props.count) props.count = 0
+    props.count++
 }
