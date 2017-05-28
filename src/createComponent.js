@@ -1,3 +1,5 @@
+import Component from "inferno-component"
+
 function isObjectShallowModified(prev, next) {
     if (null == prev || null == next || typeof prev !== "object" || typeof next !== "object") {
         return prev !== next

@@ -15,7 +15,7 @@ const node = h => tagName => (first, ...rest) => {
     }
 }
 
-const TAG_NAMES = [
+export const TAG_NAMES = [
     "a",
     "abbr",
     "acronym",

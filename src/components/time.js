@@ -2,7 +2,7 @@ class Time {
     ms = 1000
     color = "grey"
     element = "#a"
-    key: "localeTime"
+    key = "localeTime"
     style = {
         color: `green`
     }

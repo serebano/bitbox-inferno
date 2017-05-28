@@ -10,12 +10,14 @@
     "inferno-component": "^3.2.0",
     "inferno-create-element": "^3.2.2",
     "inferno-devtools": "^3.2.0",
-    "inferno-hyperscript": "^3.2.2"
+    "inferno-hyperscript": "^3.2.2",
+    "styletron-inferno": "^2.5.7"
   },
   "devDependencies": {
     "gh-pages": "^1.0.0",
     "inferno-scripts": "3.0.0",
-    "inferno-test-utils": "^3.2.2"
+    "inferno-test-utils": "^3.2.2",
+    "ramda": "^0.23.0"
   },
   "babel": {
     "presets": [
