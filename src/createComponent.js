@@ -1,4 +1,5 @@
 import Component from "inferno-component"
+import bitbox from "bitbox"
 
 function isObjectShallowModified(prev, next) {
     if (null == prev || null == next || typeof prev !== "object" || typeof next !== "object") {
@@ -18,29 +19,6 @@ function isObjectShallowModified(prev, next) {
     return false
 }
 
-export function observableProperty(propName) {
-    let valueHolder = this[propName]
-    //const atom = new Atom("reactive " + propName)
-    Object.defineProperty(this, propName, {
-        configurable: true,
-        enumerable: true,
-        get() {
-            //atom.reportObserved()
-            return valueHolder
-        },
-        set(v) {
-            if (!isForcingUpdate && isObjectShallowModified(valueHolder, v)) {
-                valueHolder = v
-                skipRender = true
-                //atom.reportChanged()
-                skipRender = false
-            } else {
-                valueHolder = v
-            }
-        }
-    })
-}
-
 let isUsingStaticRendering = false
 
 export function useStaticRendering(useStaticRendering) {
@@ -54,6 +32,29 @@ function createComponent(component) {
 
             let skipRender = false
             let isForcingUpdate = false
+
+            function observableProperty(propName) {
+                let valueHolder = this[propName]
+                //const atom = new Atom("reactive " + propName)
+                Object.defineProperty(this, propName, {
+                    configurable: true,
+                    enumerable: true,
+                    get() {
+                        //atom.reportObserved()
+                        return valueHolder
+                    },
+                    set(v) {
+                        if (!isForcingUpdate && isObjectShallowModified(valueHolder, v)) {
+                            valueHolder = v
+                            skipRender = true
+                            //atom.reportChanged()
+                            skipRender = false
+                        } else {
+                            valueHolder = v
+                        }
+                    }
+                })
+            }
 
             // make this.props an observable reference, see #124
             observableProperty.call(this, "props")
@@ -80,7 +81,7 @@ function createComponent(component) {
                     if (this.__isUnmounted !== true) {
                         try {
                             isForcingUpdate = true
-                            if (!skipRender) this.forceUpdate()
+                            if (!skipRender) Component.prototype.forceUpdate.call(this)
                         } finally {
                             isForcingUpdate = false
                         }

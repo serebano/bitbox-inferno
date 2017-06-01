@@ -1,60 +1,81 @@
 import r from "ramda"
-import bitbox, { factory, resolve, curry } from "bitbox"
+import bitbox, {
+    __,
+    observe,
+    box,
+    view,
+    factory,
+    resolve,
+    curry,
+    map,
+    curryN,
+    compose,
+    project
+} from "bitbox"
 import inferno from "inferno"
-import box from "./box"
-import App from "./components/app"
-import "inferno-devtools"
 import h from "inferno-hyperscript"
-import tags from "./tags"
-const tag = tags(h)
+import tag from "./tag"
+import Counter from "./components/counter"
+import Pure from "./components/pure"
 
-const render = curry((fn, sel, props) => inferno.render(h(fn, props), document.querySelector(sel)))
+import * as ic from "incompose"
+//import "inferno-devtools"
+import createElement from "inferno-create-element"
 
-box.render = curry((box, fn, sel, props) =>
-    inferno.render(h(fn, resolve(props, box.$)), document.querySelector(sel))
+const render = curry((fn, sel, props) =>
+    observe(() => inferno.render(tag(fn, props), document.querySelector(sel)))
 )
 
-const state = bitbox(
-    {
-        apptitle: "Demo",
-        secondsElapsed: 0,
-        todos: [
-            {
-                id: 1,
-                text: "Buy milk"
-            },
-            {
-                id: 2,
-                text: "Go running"
-            },
-            {
-                id: 3,
-                text: "Rest"
+const state = bitbox({
+    title: "Demo",
+    secondsElapsed: 0,
+    counters: []
+})
+state.counters.push({ value: state.counters.length })
+
+function Timer(props) {
+    return tag.div(tag.h4(props.value))
+}
+
+function Container(items) {
+    return tag.ul(
+        {
+            style: {
+                background: `#eee`,
+                border: `1px solid #444`,
+                boxShadow: `0 0 16px #aaa`,
+                padding: 0
             }
-        ],
-        addTodo(text) {
-            return this.todos.push({ text, id: this.todos.length })
-        }
-    }
-    //render(App, "#app")
-)
+        },
+        items
+    )
+}
 
-bitbox(state, render(box.secondsElapsed(tag.h1), `#a`))
+const Counters = compose(Container, box.counters(map(item => tag(Counter, item))))
 
-const Todo = ({ id, text }) => box.li({ key: id }, box.span(id), `-`, box.strong(text))
-const Todos = box.todos(box.ul, box.map(curry(p => box(Todo, p))))
+function App({ state }) {
+    return (
+        <section>
+            <Timer value={state.secondsElapsed} />
+            <Counter value={state.secondsElapsed} />
+        </section>
+    )
+}
 
-bitbox(state, render(Todos, `#app`))
+//render(App, "#app")(state)
 
-const a = bitbox({ count: 1 }, box.render(box.count(tag.section, tag.h1, tag.u), "#b"))
+observe(() => inferno.render(<App state={state} />, document.querySelector(`#app`)))
 
-a.count++
+// createElement(ic.compose(ic.pure)(props => createElement("h1", null, props.value)), {
+//     value: 1
+// }),
 
 setInterval(() => {
     state.secondsElapsed++
-    a.count++
-}, 1000)
+}, 500)
 
 window.tag = tag
 window.state = state
-window.App = App
+window.render = render
+window.Counter = Counter
+window.Counters = Counters

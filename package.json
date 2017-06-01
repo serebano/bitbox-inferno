@@ -11,13 +11,22 @@
     "inferno-create-element": "^3.2.2",
     "inferno-devtools": "^3.2.0",
     "inferno-hyperscript": "^3.2.2",
+    "react-easy-state": "^1.0.3",
     "styletron-inferno": "^2.5.7"
   },
   "devDependencies": {
+    "classnames": "^2.2.5",
     "gh-pages": "^1.0.0",
+    "hoist-non-react-statics": "^1.2.0",
+    "inferno": "^3.3.1",
+    "inferno-component": "^3.3.1",
+    "inferno-create-element": "^3.3.1",
+    "inferno-mobx": "^3.3.1",
     "inferno-scripts": "3.0.0",
     "inferno-test-utils": "^3.2.2",
-    "ramda": "^0.23.0"
+    "prop-types": "^15.5.10",
+    "ramda": "^0.23.0",
+    "todomvc-app-css": "^2.1.0"
   },
   "babel": {
     "presets": [
